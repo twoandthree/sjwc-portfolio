@@ -1,4 +1,3 @@
-
 const workNodes = [
     { id: 'hexagon', title: '// 01. TYD 19\'' },
     { id: 'back9', title: '// 02. Python Freelance 23\'' },
@@ -11,6 +10,7 @@ const workNodes = [
 let currentAngle = 0;
 let orbitSpeed = 1.0;
 let activeOrbIndex = -1; // -1 means all are in orbit
+let isHovered = false;
 const radiusX = 230;
 const radiusY = 50;
 
@@ -36,10 +36,28 @@ function createOrbs() {
         orb.className = 'truth-orb pointer-events-auto';
         orb.dataset.index = index;
         
+        // Localized surface particle canvas for the noise distortion wrap
+        const surfaceCanvas = document.createElement('canvas');
+        surfaceCanvas.className = 'orb-surface-canvas';
+        surfaceCanvas.width = 144;  // High-DPI retina sharpness
+        surfaceCanvas.height = 144;
+        orb.appendChild(surfaceCanvas);
+
         const label = document.createElement('div');
         label.className = 'orb-label';
         label.textContent = node.title;
         orb.appendChild(label);
+
+        // Hover events to pause orbital rotation while targeting
+        orb.addEventListener('mouseenter', () => { 
+            isHovered = true; 
+        });
+        
+        orb.addEventListener('mouseleave', () => { 
+            if (activeOrbIndex === -1) {
+                isHovered = false; 
+            }
+        });
 
         orb.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -57,11 +75,14 @@ function createOrbs() {
 
 function triggerWarpBlink(index) {
     activeOrbIndex = index;
-    statusIndicator.textContent = `// FOCUSED: ${workNodes[index].title.toUpperCase()}`;
+    if (statusIndicator) {
+        statusIndicator.textContent = `// FOCUSED: ${workNodes[index].title.toUpperCase()}`;
+    }
 
     orbElements.forEach((orb, i) => {
         orb.classList.remove('active-orb', 'hard-impact-shake', 'warp-blink');
         if (i === index) {
+            // Promote focused orb to the front ring for clear rendering & focus
             if (orb.parentNode !== frontOrbRing) {
                 frontOrbRing.appendChild(orb);
             }
@@ -73,14 +94,23 @@ function triggerWarpBlink(index) {
             }, 80);
         }
     });
+
+    // Option: Trigger holographic dossier projection reveal here when ready
+    // openDossier(workNodes[index]);
 }
 
 function releaseOrb() {
     activeOrbIndex = -1;
-    statusIndicator.textContent = '// ALL ORBS ORBITING';
+    isHovered = false;
+    if (statusIndicator) {
+        statusIndicator.textContent = '// ALL ORBS ORBITING';
+    }
     orbElements.forEach(orb => {
         orb.classList.remove('active-orb', 'hard-impact-shake', 'warp-blink');
     });
+
+    // Option: Trigger dossier closure here when ready
+    // closeDossier();
 }
 
 function updateOrbPositions() {
@@ -134,9 +164,79 @@ function updateOrbPositions() {
 }
 
 function animate() {
-    currentAngle += 0.005 * orbitSpeed;
+    // Rotation pauses when hovering an orb or when an orb is actively locked (-1 means inactive)
+    if (!isHovered && activeOrbIndex === -1) {
+        currentAngle += 0.005 * orbitSpeed;
+    }
+    
     updateOrbPositions();
     requestAnimationFrame(animate);
+}
+
+// Localized Surface Particle Shader Loop for Orb Hover Shells
+function initOrbSurfaces() {
+    const canvases = document.querySelectorAll('.orb-surface-canvas');
+    
+    canvases.forEach((canvas) => {
+        const ctx = canvas.getContext('2d');
+        const orb = canvas.closest('.truth-orb');
+        let animationFrameId;
+        let angle = 0;
+
+        function render() {
+            // Only animate if the parent orb is currently being hovered
+            if (orb.matches(':hover')) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                const cx = canvas.width / 2;
+                const cy = canvas.height / 2;
+                const radius = 54; // Scaled for 144x144 retina canvas
+                
+                angle += 0.03; // Rotation speed
+                
+                // Draw a grid of latitude/longitude points wrapped on a sphere
+                const lats = 10;
+                const lons = 16;
+                
+                for (let i = 0; i <= lats; i++) {
+                    const lat = (i / lats) * Math.PI - Math.PI / 2;
+                    const sinLat = Math.sin(lat);
+                    const cosLat = Math.cos(lat);
+                    
+                    for (let j = 0; j < lons; j++) {
+                        const lon = (j / lons) * Math.PI * 2 + angle;
+                        
+                        // Simulating noise displacement via multi-frequency sine waves
+                        const noise = Math.sin(lat * 3 + angle * 2) * Math.cos(lon * 4 + angle) * 6;
+                        const currentRadius = radius + noise;
+                        
+                        // 3D to 2D projection
+                        const x = cx + currentRadius * cosLat * Math.sin(lon);
+                        const y = cy + currentRadius * sinLat;
+                        const z = cosLat * Math.cos(lon); // Depth sorting factor
+                        
+                        // Only render points facing the camera (z > -0.2)
+                        if (z > -0.2) {
+                            const alpha = Math.max(0.2, (z + 0.2) / 1.2);
+                            const size = Math.max(1, (z * 1.5 + 2.2));
+                            
+                            ctx.fillStyle = `rgba(255, 30, 30, ${alpha})`;
+                            ctx.fillRect(x - size/2, y - size/2, size, size);
+                        }
+                    }
+                }
+                animationFrameId = requestAnimationFrame(render);
+            } else {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+
+        // Trigger loop on mouseenter
+        orb.addEventListener('mouseenter', () => {
+            cancelAnimationFrame(animationFrameId);
+            render();
+        });
+    });
 }
 
 stageContainer.addEventListener('click', (e) => {
@@ -147,14 +247,15 @@ stageContainer.addEventListener('click', (e) => {
 
 sliderSpeed.addEventListener('input', (e) => {
     orbitSpeed = parseFloat(e.target.value);
-    speedVal.textContent = `${orbitSpeed.toFixed(1)}x`;
-    speedIndicator.textContent = `Orbit Speed: ${orbitSpeed.toFixed(1)}x`;
+    if (speedVal) speedVal.textContent = `${orbitSpeed.toFixed(1)}x`;
+    if (speedIndicator) speedIndicator.textContent = `Orbit Speed: ${orbitSpeed.toFixed(1)}x`;
 });
 
 btnRelease.addEventListener('click', releaseOrb);
 
 window.onload = () => {
     createOrbs();
+    initOrbSurfaces();
     updateOrbPositions();
     animate();
 };
