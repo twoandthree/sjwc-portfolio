@@ -20,28 +20,31 @@ body {
 .stage-3d {
     perspective: 1000px;
     transform-style: preserve-3d;
+    perspective-origin: 50% 50%; /* Force the vanishing point dead-center */
+    position: relative;          /* Ensure container bounds are locked */
 }
 
 .orb-ring {
     position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transform-style: preserve-3d;
     width: 0;
     height: 0;
-    transform-style: preserve-3d;
 }
 
 /* Truth Seeking Orb Styling (Manga Black with Specs Highlight) */
 .truth-orb {
     position: absolute;
-    left: -36px;
-    top: -36px;
     width: 72px;
     height: 72px;
     border-radius: 50%;
     background: #000000;
     cursor: pointer;
-    transform-style: preserve-3d;
+    transform-origin: center center;
     pointer-events: auto;
-    transition: transform 0.05s linear, border-color 0.3s ease, box-shadow 0.3s ease, opacity 0.15s ease;
+    transition: box-shadow 0.2s ease;
     box-shadow: 
         0 0 25px rgba(0, 0, 0, 0.9),
         inset 0 0 15px rgba(0, 0, 0, 1);
@@ -110,7 +113,7 @@ body {
     opacity: 1;
 }
 
-High-speed Warp Blink & Violent Hard-Stop Shake Effect
+/* High-speed Warp Blink & Violent Hard-Stop Shake Effect */
 .warp-blink {
     transition: transform 0.08s cubic-bezier(0, 0, 0.2, 1), opacity 0.08s ease !important;
     filter: brightness(2) contrast(1.5) !important;
@@ -122,11 +125,11 @@ High-speed Warp Blink & Violent Hard-Stop Shake Effect
 
 @keyframes impactShake {
     0% { transform: scale(1.45) translate3d(0, 0, 180px) rotate(0deg); }
-    15% { transform: scale(1.45) translate3d(-14px, 8px, 180px) rotate(-4deg); }
-    30% { transform: scale(1.45) translate3d(12px, -10px, 180px) rotate(4deg); }
-    45% { transform: scale(1.45) translate3d(-8px, 6px, 180px) rotate(-2deg); }
-    60% { transform: scale(1.45) translate3d(6px, -4px, 180px) rotate(2deg); }
-    75% { transform: scale(1.45) translate3d(-3px, 2px, 180px) rotate(-1deg); }
+    15% { transform: scale(1.45) translate3d(-5px, 3px, 180px) rotate(-1.5deg); }
+    30% { transform: scale(1.45) translate3d(4px, -4px, 180px) rotate(1.5deg); }
+    45% { transform: scale(1.45) translate3d(-3px, 2px, 180px) rotate(-1deg); }
+    60% { transform: scale(1.45) translate3d(2px, -2px, 180px) rotate(0.5deg); }
+    75% { transform: scale(1.45) translate3d(-1px, 1px, 180px) rotate(-0.5deg); }
     100% { transform: scale(1.4) translate3d(0, 0, 180px) rotate(0deg); }
 }
 

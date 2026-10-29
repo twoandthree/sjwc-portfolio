@@ -36,10 +36,9 @@ function createOrbs() {
         orb.className = 'truth-orb pointer-events-auto';
         orb.dataset.index = index;
         
-        // Localized surface particle canvas for the noise distortion wrap
         const surfaceCanvas = document.createElement('canvas');
         surfaceCanvas.className = 'orb-surface-canvas';
-        surfaceCanvas.width = 144;  // High-DPI retina sharpness
+        surfaceCanvas.width = 144;
         surfaceCanvas.height = 144;
         orb.appendChild(surfaceCanvas);
 
@@ -48,7 +47,6 @@ function createOrbs() {
         label.textContent = node.title;
         orb.appendChild(label);
 
-        // Hover events to pause orbital rotation while targeting
         orb.addEventListener('mouseenter', () => { 
             isHovered = true; 
         });
@@ -68,7 +66,16 @@ function createOrbs() {
             }
         });
 
-        backOrbRing.appendChild(orb);
+        // Determine starting depth hemisphere on creation
+        const angle = currentAngle + (index * (2 * Math.PI / workNodes.length));
+        const z = Math.sin(angle);
+
+        if (z < 0) {
+            backOrbRing.appendChild(orb);
+        } else {
+            frontOrbRing.appendChild(orb);
+        }
+
         orbElements.push(orb);
     });
 }
@@ -115,44 +122,49 @@ function releaseOrb() {
 
 function updateOrbPositions() {
     const count = orbElements.length;
-    const auraHalfWidth = 0; // Width threshold behind the white aura & torso
 
     orbElements.forEach((orb, i) => {
         if (i === activeOrbIndex) {
-            if (orb.parentNode !== frontOrbRing) frontOrbRing.appendChild(orb);
-            orb.style.transform = `translate3d(0px, 40px, 180px) scale(1.4)`;
-            orb.style.zIndex = 100;
+            // Ensure focal orb is always in the front container layer
+            if (orb.parentNode !== frontOrbRing) {
+                frontOrbRing.appendChild(orb);
+            }
+            orb.style.transform = `translate(-50%, -50%) translate(0px, 40px) scale(1.4)`;
+            orb.style.zIndex = 1000;
             orb.style.opacity = 1;
+            orb.style.pointerEvents = 'auto';
             orb.style.setProperty('--highlight-x', `50%`);
             orb.style.setProperty('--highlight-y', `35%`);
             return;
         }
 
         const angle = currentAngle + (i * (2 * Math.PI / count));
+        
+        // Ellipse coordinates
         const x = Math.cos(angle) * radiusX;
-        const z = Math.sin(angle) * radiusX; 
         const y = Math.sin(angle) * radiusY;
+        const z = Math.sin(angle); // Depth factor (-1 = deep back, +1 = close front)
 
-        const depthScale = (z + radiusX) / (2 * radiusX);
+        const depthScale = (z + 1) / 2;
         const scale = 0.65 + (depthScale * 0.45);
-
         let orbOpacity = 0.55 + (depthScale * 0.45);
 
-        // Route between back ring (z < 0) and front ring (z >= 0)
-        if (z < 0) {
-            if (orb.parentNode !== backOrbRing) backOrbRing.appendChild(orb);
-            
-            // Fade out completely while passing directly behind the central aura/torso
-            if (Math.abs(x) < auraHalfWidth) {
-                orbOpacity = 0;
-            }
-        } else {
-            if (orb.parentNode !== frontOrbRing) frontOrbRing.appendChild(orb);
+        // --- DYNAMIC DOM RE-PARENTING ---
+        // Dynamically shift nodes between back (behind avatar z-10) and front (in front z-30)
+        const targetRing = (z < 0) ? backOrbRing : frontOrbRing;
+        if (orb.parentNode !== targetRing) {
+            targetRing.appendChild(orb);
         }
 
-        const zIndex = Math.round(depthScale * 20);
+        if (z < 0) {
+            orb.style.pointerEvents = 'none';
+        } else {
+            orb.style.pointerEvents = 'auto';
+        }
 
-        orb.style.transform = `translate3d(${x}px, ${y}px, ${z}px) scale(${scale})`;
+        const zIndex = Math.round(depthScale * 100);
+
+        orb.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px) scale(${scale})`;
         orb.style.zIndex = zIndex;
         orb.style.opacity = orbOpacity;
 
