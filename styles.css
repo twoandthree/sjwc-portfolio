@@ -1,0 +1,145 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700&family=Cinzel:wght@700&display=swap');
+
+body {
+    font-family: 'Space Grotesk', sans-serif;
+    background-color: #050506;
+    color: #f4f4f5;
+    overflow-x: hidden;
+}
+
+/* Manga Speedlines / Screentone Background Pattern */
+.manga-bg {
+    background-color: #050506;
+    background-image: 
+        radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+        radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.8) 0%, #050506 100%);
+    background-size: 16px 16px, 100% 100%;
+}
+
+/* 3D Scene Stage */
+.stage-3d {
+    perspective: 1000px;
+    transform-style: preserve-3d;
+}
+
+.orb-ring {
+    position: absolute;
+    width: 0;
+    height: 0;
+    transform-style: preserve-3d;
+}
+
+/* Truth Seeking Orb Styling (Manga Black with Specs Highlight) */
+.truth-orb {
+    position: absolute;
+    left: -36px;
+    top: -36px;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: #000000;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    transition: transform 0.05s linear, border-color 0.3s ease, box-shadow 0.3s ease, opacity 0.15s ease;
+    box-shadow: 
+        0 0 25px rgba(0, 0, 0, 0.9),
+        inset 0 0 15px rgba(0, 0, 0, 1);
+}
+
+/* Core Orb Specular Inner Light (Gantz / Truth-Seeking Orb Center Glow) */
+.truth-orb::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(
+        circle at var(--highlight-x, 45%) var(--highlight-y, 40%),
+        rgba(255, 255, 255, 0.95) 0%,
+        rgba(220, 220, 225, 0.4) 12%,
+        rgba(40, 40, 45, 0.8) 35%,
+        #000000 70%
+    );
+    mix-blend-mode: screen;
+    pointer-events: none;
+}
+
+/* Micro Grain Filter Mask */
+.truth-orb::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 50%, transparent 20%, #000 90%);
+    filter: url(#orb-grain);
+    mix-blend-mode: multiply;
+    opacity: var(--noir-grain, 0.85);
+    pointer-events: none;
+}
+
+/* Hover & Active States */
+.truth-orb:hover {
+    transform: scale(1.15) translateZ(30px) !important;
+    box-shadow: 
+        0 0 30px var(--glow-color, rgba(255, 255, 255, 0.4)),
+        inset 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+.truth-orb.active-orb {
+    border: 1.5px solid rgba(255, 255, 255, 0.95);
+    box-shadow: 
+        0 0 50px rgba(255, 255, 255, 0.9),
+        0 0 100px rgba(255, 255, 255, 0.4),
+        inset 0 0 25px rgba(255, 255, 255, 0.6);
+}
+
+/* High-speed Warp Blink & Violent Hard-Stop Shake Effect */
+.warp-blink {
+    transition: transform 0.08s cubic-bezier(0, 0, 0.2, 1), opacity 0.08s ease !important;
+    filter: brightness(2) contrast(1.5) !important;
+}
+
+.hard-impact-shake {
+    animation: impactShake 0.35s cubic-bezier(0.36, 0.07, 0.19, 0.97) both !important;
+}
+
+@keyframes impactShake {
+    0% { transform: scale(1.45) translate3d(0, 0, 180px) rotate(0deg); }
+    15% { transform: scale(1.45) translate3d(-14px, 8px, 180px) rotate(-4deg); }
+    30% { transform: scale(1.45) translate3d(12px, -10px, 180px) rotate(4deg); }
+    45% { transform: scale(1.45) translate3d(-8px, 6px, 180px) rotate(-2deg); }
+    60% { transform: scale(1.45) translate3d(6px, -4px, 180px) rotate(2deg); }
+    75% { transform: scale(1.45) translate3d(-3px, 2px, 180px) rotate(-1deg); }
+    100% { transform: scale(1.4) translate3d(0, 0, 180px) rotate(0deg); }
+}
+
+/* Floating Label beneath Orb */
+.orb-label {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(8px);
+    white-space: nowrap;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #a1a1aa;
+    background: rgba(9, 9, 11, 0.85);
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1px solid #27272a;
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+.truth-orb:hover .orb-label, .truth-orb.active-orb .orb-label {
+    color: #ffffff;
+    border-color: #ffffff;
+    background: #000000;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+/* Manga Aura Silhouette Effect */
+.figure-aura {
+    filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.2)) drop-shadow(0 0 80px rgba(255, 255, 255, 0.08));
+}
