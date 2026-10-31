@@ -1,15 +1,54 @@
+
 const workNodes = [
-    { id: 'hexagon', title: '// 01. TYD 19\'' },
-    { id: 'back9', title: '// 02. Python Freelance 23\'' },
-    { id: 'tucson', title: '// 03. Hexagon Mining 23\'' },
-    { id: 'flutter', title: '// 04. Flutter Freelance 23\'' },
-    { id: 'baseten', title: '// 05. Full-Stack Back9 Parlor 25\'' },
-    { id: 'systems', title: '// 06. Web Freelance 26\'' }
+    { 
+        id: 'freelance', 
+        title: '2026 - Freelance',
+        role: 'Front-End Developer',
+        tech: 'HTML/CSS/JS // DNS // UI/UX',
+        desc: 'Designed, photographed, and deployed custom static web apps and DNS routing for local businesses.'
+    },
+    { 
+        id: 'back9', 
+        title: '2025 - Back9 Parlor',
+        role: 'Full-Stack Web Dev',
+        tech: ' WordPress // Elementor',
+        desc: 'Built custom frontend components and managed WooCommerce booking infrastructure & SEO.'
+    },
+    { 
+        id: 'flutter', 
+        title: '2023 - Freelance',
+        role: 'Flutter Developer',
+        tech: 'Flutter // Dart // SQL',
+        desc: 'Built cross-platform mobile application prototype utilizing MVC architecture and SQL persistence.'
+    },
+    { 
+        id: 'hex', 
+        title: '2023 - Hexagon Mining',
+        role: 'Software QA Engineer',
+        tech: 'Python Scripting // UI Testing',
+        desc: 'Conducted rigorous manual and automated quality assurance for operator safety interfaces.'
+    },
+    { 
+        id: 'mining', 
+        title: '2023 - Freelance',
+        role: 'Python Developer',
+        tech: 'Python // TestRail // openpyxl',
+        desc: 'Automated test result reporting pipelines, cutting manual execution overhead by 20 hours.'
+    },
+    { 
+        id: 'tyd', 
+        title: '2019 - Tucson Youth Development',
+        role: 'Android Developer',
+        tech: 'Kotlin // Firebase',
+        desc: 'Engineered cross-platform caseworker messaging app with custom Firebase backend architecture.'
+    },
+
 ];
 
 let currentAngle = 0;
 let orbitSpeed = 1.0;
 let activeOrbIndex = -1; // -1 means all are in orbit
+let time = 0;
 let isHovered = false;
 const radiusX = 230;
 const radiusY = 50;
@@ -17,11 +56,9 @@ const radiusY = 50;
 const backOrbRing = document.getElementById('backOrbRing');
 const frontOrbRing = document.getElementById('frontOrbRing');
 const stageContainer = document.getElementById('stageContainer');
-const sliderSpeed = document.getElementById('sliderSpeed');
-const speedVal = document.getElementById('speedVal');
-const speedIndicator = document.getElementById('speedIndicator');
-const statusIndicator = document.getElementById('statusIndicator');
-const btnRelease = document.getElementById('btnRelease');
+const sliderSpeed = document.getElementById('sliderSpeed') || { value: '1', addEventListener: () => {} };
+const speedVal = document.getElementById('speedVal') || { textContent: '' };
+const btnRelease = document.getElementById('btnRelease') || { addEventListener: () => {}, style: {} };
 
 // Store stable references in an array so index 'i' never gets scrambled by DOM moves
 let orbElements = [];
@@ -42,19 +79,26 @@ function createOrbs() {
         surfaceCanvas.height = 144;
         orb.appendChild(surfaceCanvas);
 
+        // --- NEW: Holographic Dossier Container ---
+        const dossier = document.createElement('div');
+        dossier.className = 'orb-dossier';
+        dossier.innerHTML = `
+            <div class="dossier-header">${node.title}</div>
+            <div class="dossier-role">${node.role}</div>
+            <div class="dossier-tech">// ${node.tech}</div>
+            <div class="dossier-desc">${node.desc}</div>
+        `;
+        orb.appendChild(dossier);
+        // ------------------------------------------
+
         const label = document.createElement('div');
         label.className = 'orb-label';
         label.textContent = node.title;
         orb.appendChild(label);
 
-        orb.addEventListener('mouseenter', () => { 
-            isHovered = true; 
-        });
-        
+        orb.addEventListener('mouseenter', () => { isHovered = true; });
         orb.addEventListener('mouseleave', () => { 
-            if (activeOrbIndex === -1) {
-                isHovered = false; 
-            }
+            if (activeOrbIndex === -1) { isHovered = false; }
         });
 
         orb.addEventListener('click', (e) => {
@@ -66,7 +110,6 @@ function createOrbs() {
             }
         });
 
-        // Determine starting depth hemisphere on creation
         const angle = currentAngle + (index * (2 * Math.PI / workNodes.length));
         const z = Math.sin(angle);
 
@@ -110,14 +153,14 @@ function releaseOrb() {
     activeOrbIndex = -1;
     isHovered = false;
     if (statusIndicator) {
-        statusIndicator.textContent = '// ALL ORBS ORBITING';
+        statusIndicator.textContent = 'HIGHLY MOTIVATED, AND READY TO GET CREATIVE';
     }
     orbElements.forEach(orb => {
         orb.classList.remove('active-orb', 'hard-impact-shake', 'warp-blink');
     });
 
     // Option: Trigger dossier closure here when ready
-    // closeDossier();
+    closeDossier();
 }
 
 function updateOrbPositions() {
@@ -125,18 +168,13 @@ function updateOrbPositions() {
 
     orbElements.forEach((orb, i) => {
         if (i === activeOrbIndex) {
-            // Ensure focal orb is always in the front container layer
-            if (orb.parentNode !== frontOrbRing) {
-                frontOrbRing.appendChild(orb);
-            }
-            orb.style.transform = `translate(-50%, -50%) translate(0px, 40px) scale(1.4)`;
-            orb.style.zIndex = 1000;
-            orb.style.opacity = 1;
-            orb.style.pointerEvents = 'auto';
-            orb.style.setProperty('--highlight-x', `50%`);
-            orb.style.setProperty('--highlight-y', `35%`);
-            return;
-        }
+    if (orb.parentNode !== frontOrbRing) {
+        frontOrbRing.appendChild(orb);
+    }
+    orb.classList.add('active-orb');
+    orb.style.transform = ''; // Let CSS & keyframes handle transform entirely
+    return;
+}
 
         const angle = currentAngle + (i * (2 * Math.PI / count));
         
@@ -258,9 +296,7 @@ stageContainer.addEventListener('click', (e) => {
 });
 
 sliderSpeed.addEventListener('input', (e) => {
-    orbitSpeed = parseFloat(e.target.value);
-    if (speedVal) speedVal.textContent = `${orbitSpeed.toFixed(1)}x`;
-    if (speedIndicator) speedIndicator.textContent = `Orbit Speed: ${orbitSpeed.toFixed(1)}x`;
+    orbitSpeed = orbitSpeed;
 });
 
 btnRelease.addEventListener('click', releaseOrb);
