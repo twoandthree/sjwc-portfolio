@@ -1,7 +1,66 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700&family=Cinzel:wght@700&display=swap');
+
+/* ==========================================
+   DEATH STRANDING HUD FONT DEFINITIONS
+   ========================================== */
+
+@font-face {
+    font-family: 'DeathStranding Mono Light';
+    src: url('../assets/DeathStrandingFonts/bo-cd-mono-light.otf') format('opentype');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'DeathStranding Mono Medium';
+    src: url('../assets/DeathStrandingFonts/bo-cd-mono-medium.otf') format('opentype');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'DeathStranding Mils';
+    src: url('../assets/DeathStrandingFonts/ex-mils-med.otf') format('opentype');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'DeathStranding Mils Oblique';
+    src: url('../assets/DeathStrandingFonts/ex-mils-med-oblique.otf') format('opentype');
+    font-weight: 500;
+    font-style: oblique;
+}
+
+@font-face {
+    font-family: 'DeathStranding Neon';
+    src: url('../assets/DeathStrandingFonts/ex-ps-medium-neon.otf') format('opentype');
+    font-weight: 500;
+    font-style: normal;
+}
+
+/* --- Font Utility Classes --- */
+.font-ds-mono-light {
+    font-family: 'DeathStranding Mono Light', monospace;
+}
+
+.font-ds-mono-medium {
+    font-family: 'DeathStranding Mono Medium', monospace;
+}
+
+.font-ds-mils {
+    font-family: 'DeathStranding Mils', sans-serif;
+}
+
+.font-ds-mils-oblique {
+    font-family: 'DeathStranding Mils Oblique', sans-serif;
+}
+
+.font-ds-neon {
+    font-family: 'DeathStranding Neon', sans-serif;
+}
 
 body {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'DeathStranding Mono Medium';
     background-color: #050506;
     color: #f4f4f5;
     overflow-x: hidden;
@@ -299,8 +358,8 @@ body {
 }
 
 .dossier-role {
-    font-family: 'Cinzel', serif;
-    font-size: 15px;
+    font-family: 'Megrim', cursive;
+    font-size: 1.5rem;
     font-weight: 700;
     color: #ff3333;
     margin-bottom: 4px;
@@ -347,3 +406,23 @@ body {
 .truth-orb.active-orb .orb-label {
     opacity: 0;
 }
+
+/* Double-Line Wing Subtitle Accent */
+.hud-wings {
+  display: grid;
+  grid-template-columns: 1fr max-content 1fr;
+  grid-template-rows: 27px 0;
+  grid-gap: 12px;
+  align-items: center;
+}
+
+.hud-wings:before,
+.hud-wings:after {
+  content: " ";
+  display: block;
+  border-bottom: 1px solid #27272a; /* Tailwind zinc-800 */
+  border-top: 1px solid #27272a;    /* Tailwind zinc-800 */
+  height: 4px;
+  background-color: transparent;
+}
+

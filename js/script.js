@@ -37,7 +37,7 @@ const workNodes = [
     },
     { 
         id: 'tyd', 
-        title: '2019 - Tucson Youth Development',
+        title: '2019 -Tucson Youth Development',
         role: 'Android Developer',
         tech: 'Kotlin // Firebase',
         desc: 'Engineered cross-platform caseworker messaging app with custom Firebase backend architecture.'
@@ -125,9 +125,9 @@ function createOrbs() {
 
 function triggerWarpBlink(index) {
     activeOrbIndex = index;
-    if (statusIndicator) {
-        statusIndicator.textContent = `// FOCUSED: ${workNodes[index].title.toUpperCase()}`;
-    }
+    // if (statusIndicator) {
+    //     statusIndicator.textContent = `// FOCUSED: ${workNodes[index].title.toUpperCase()}`;
+    // }
 
     orbElements.forEach((orb, i) => {
         orb.classList.remove('active-orb', 'hard-impact-shake', 'warp-blink');
@@ -152,15 +152,15 @@ function triggerWarpBlink(index) {
 function releaseOrb() {
     activeOrbIndex = -1;
     isHovered = false;
-    if (statusIndicator) {
-        statusIndicator.textContent = 'HIGHLY MOTIVATED, AND READY TO GET CREATIVE';
-    }
+    // if (statusIndicator) {
+    //     statusIndicator.textContent = 'HIGHLY MOTIVATED, AND READY TO GET CREATIVE';
+    // }
     orbElements.forEach(orb => {
         orb.classList.remove('active-orb', 'hard-impact-shake', 'warp-blink');
     });
 
     // Option: Trigger dossier closure here when ready
-    closeDossier();
+    //closeDossier();
 }
 
 function updateOrbPositions() {
