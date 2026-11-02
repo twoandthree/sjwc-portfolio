@@ -302,6 +302,39 @@ sliderSpeed.addEventListener('input', (e) => {
 
 btnRelease.addEventListener('click', releaseOrb);
 
+function renderMobileWorkNodes() {
+    const container = document.getElementById('mobile-work-container');
+    if (!container) return;
+
+    // Optional header label
+    let html = `<div class="text-xs font-mono text-zinc-500 uppercase tracking-widest mb-1">// Experience_Nodes</div>`;
+
+    // Map through your workNodes array
+    html += workNodes.map(node => `
+        <div class="border border-zinc-800 bg-zinc-950/80 p-4 rounded-none relative">
+            <!-- Cyberpunk corner accents -->
+            <div class="absolute top-0 left-0 w-1 h-1 bg-purple-500"></div>
+            <div class="absolute bottom-0 right-0 w-1 h-1 bg-purple-500"></div>
+
+            <div class="flex justify-between items-start mb-2">
+                <span class="text-sm font-mono text-purple-400 font-bold">${node.title}</span>
+                <span class="text-xs font-mono text-zinc-400 bg-zinc-900 px-2 py-0.5 border border-zinc-800">${node.role}</span>
+            </div>
+            
+            <div class="text-xs font-mono text-zinc-500 mb-3">${node.tech}</div>
+            
+            <p class="text-sm text-zinc-300 font-sans leading-relaxed">
+                ${node.desc}
+            </p>
+        </div>
+    `).join('');
+
+    container.innerHTML = html;
+}
+
+// Run on page load
+document.addEventListener('DOMContentLoaded', renderMobileWorkNodes);
+
 window.onload = () => {
     createOrbs();
     initOrbSurfaces();
