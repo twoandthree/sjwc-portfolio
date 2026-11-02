@@ -214,24 +214,15 @@ function updateOrbPositions() {
     });
 }
 
-function animate(currentTime) {
-    // 1. Calculate how many seconds have passed since the last frame
-    const deltaTime = (currentTime - lastTime) / 1000;
-    lastTime = currentTime;
-
+function animate() {
     // Rotation pauses when hovering an orb or when an orb is actively locked (-1 means inactive)
     if (!isHovered && activeOrbIndex === -1) {
-        // 2. Multiply by deltaTime and scale up the multiplier to match your desired speed
-        // (0.005 per frame at 60fps equals roughly 0.3 radians per second)
-        currentAngle += 0.3 * orbitSpeed * deltaTime;
+        currentAngle += 0.005 * orbitSpeed;
     }
     
     updateOrbPositions();
     requestAnimationFrame(animate);
 }
-
-// Start the loop
-requestAnimationFrame(animate);
 
 // Localized Surface Particle Shader Loop for Orb Hover Shells
 function initOrbSurfaces() {
